@@ -1,0 +1,4 @@
+{
+  "name": "wakeup",
+  "main": "party/server.js"
+}

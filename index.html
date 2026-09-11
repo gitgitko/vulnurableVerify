@@ -8,17 +8,18 @@
   :root{
     --bg:#0a0e13; --panel:#111821; --panel2:#161f2b; --border:#22303f;
     --text:#dbe6f0; --muted:#7d92a8; --accent:#3ddc97; --danger:#ff4d6d;
+
+    /* ---- additions so the lab snippet's variables resolve ---- */
+    --dark-primary:#0d141c;
+    --border-radius:8px;
+    --spacing:16px;
+    --spacing-sm:8px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column;
     font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   }
-  .banner{
-    background:#2a0d14; color:#ffb3c1; border-bottom:1px solid #52202c;
-    padding:9px 16px; font-size:12.5px; letter-spacing:.2px;
-  }
-  .banner b{color:#ff8fa3}
   header{
     display:flex; align-items:center; gap:12px; padding:14px 20px;
     border-bottom:1px solid var(--border); background:linear-gradient(180deg,#0e1620,#0a0e13);
@@ -33,10 +34,14 @@
     padding:3px 9px;border-radius:20px}
 
   main{flex:1;display:flex;min-height:0}
+
+  /* identity panel */
   aside{
-    width:280px;border-right:1px solid var(--border);padding:16px;
+    width:280px;border-right:1px solid var(--border);
     display:flex;flex-direction:column;gap:14px;background:var(--panel);
   }
+  #identitySection{ padding:var(--spacing); display:flex; flex-direction:column; gap:14px; }
+
   aside h2{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted)}
   aside .row{display:flex;flex-direction:column;gap:6px}
   aside label{font-size:12px;color:var(--muted)}
@@ -49,24 +54,40 @@
     cursor:pointer;background:var(--accent);color:#04140d;font-weight:700;border-color:var(--accent);
   }
   aside button:hover{filter:brightness(1.08)}
+
+  /* ---- additions for the lab ---- */
   #nameDisplay{
-    font-size:12.5px;color:var(--muted);border:1px dashed var(--border);
-    padding:8px 10px;border-radius:8px;word-break:break-word;
+    background-color:var(--dark-primary);
+    border-radius:var(--border-radius);
+    padding:var(--spacing-sm);
+    margin:var(--spacing-sm) 0;
+    word-break:break-word;
+    border:1px dashed var(--border);
+    font-size:12.5px;
+    color:var(--muted);
   }
+  #nameDisplay b{ color:var(--text); }
+
   .hint{font-size:11.5px;color:var(--muted);line-height:1.6}
   .hint code{background:#0d141c;border:1px solid var(--border);padding:1px 5px;border-radius:4px;color:#9fd9bd;font-size:11px}
 
+  /* chat panel */
   section.chat{flex:1;display:flex;flex-direction:column;min-width:0}
-  #messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:6px}
+  #chatSection{ display:flex; flex-direction:column; flex:1; min-height:0; padding:var(--spacing); gap:var(--spacing-sm); }
+  #messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+
   .msg{font-size:14px;word-wrap:break-word}
   .msg .time{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
   .msg .user{font-weight:700}
+  .msg .text{word-break:break-word}
   .msg .sep{color:var(--muted);margin:0 5px}
   .msg.system{color:var(--muted);font-size:12.5px;font-style:italic}
   .msg.system .sys{color:#9fd9bd}
+  #messages .msg:first-child{ margin-top:0; }
 
   form#composer{
-    display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:var(--panel);
+    display:flex;gap:10px;padding-top:var(--spacing-sm);
+    border-top:1px solid var(--border);
   }
   #text{
     flex:1;font:inherit;padding:11px 14px;border-radius:9px;border:1px solid var(--border);
@@ -86,10 +107,6 @@
 </style>
 </head>
 <body>
-<div class="banner">
-  <b>⚠️ Training lab.</b> This chat is deliberately vulnerable to XSS. Run on localhost only — never expose this port to the internet.
-</div>
-
 <header>
   <div class="logo">X</div>
   <h1>XSS <span>Chat Lab</span></h1>
@@ -98,26 +115,29 @@
 
 <main>
   <aside>
-    <h2>Identity</h2>
-    <div class="row">
-      <label for="name">Display name</label>
-      <input id="name" maxlength="48" placeholder="guest">
-      <button id="setName">Set name</button>
-    </div>
+    <div id="identitySection">
+      <h2>Identity</h2>
+      <div class="row">
+        <label for="name">Display name</label>
+        <input id="name" maxlength="48" placeholder="guest">
+        <button id="setName" type="button">Set name</button>
+      </div>
 
-    <!-- ⚠️ VULN #1 & #2 target: this label is written with innerHTML -->
-    <div id="nameDisplay">You are <b>Guest</b></div>
+      <!-- was VULN #1/#2 target; now written with textContent -->
+      <div id="nameDisplay">You are <b>Guest</b></div>
 
-    <h2>Try these</h2>
-    <div class="hint">
-      Paste a payload into the <b>message box</b> or <b>display name</b>:<br>
-      <code>&lt;img src=x onerror=alert(1)&gt;</code><br><br>
-      Or load:<br>
-      <code>/#&lt;img src=x onerror=alert(2)&gt;</code>
+      <h2>Try these</h2>
+      <div class="hint">
+        Paste a payload into the <b>message box</b> or <b>display name</b>:<br>
+        <code>&lt;img src=x onerror=alert(1)&gt;</code><br><br>
+        Or load:<br>
+        <code>/#&lt;img src=x onerror=alert(2)&gt;</code><br><br>
+        With the sinks fixed, these should render as <em>plain text</em>.
+      </div>
     </div>
   </aside>
 
-  <section class="chat">
+  <section class="chat" id="chatSection">
     <div id="messages"></div>
     <form id="composer" autocomplete="off">
       <input id="text" placeholder="Send a message…" maxlength="4000">
@@ -128,54 +148,61 @@
 
 <script>
 /* ------------------------------------------------------------------
-   ⚠️  INTENTIONALLY VULNERABLE CLIENT
-   Every place marked VULN uses innerHTML with untrusted data.
-   That is deliberate. Do not reuse this pattern in real code.
+   HARDENED CLIENT
+   All four original innerHTML sinks have been replaced with
+   createElement + textContent (and numeric coercion for the color).
+   Nothing here trusts server-supplied strings as HTML.
 ------------------------------------------------------------------ */
 
 const ws = new WebSocket(
   (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host
 );
 
-const $messages   = document.getElementById('messages');
-const $form       = document.getElementById('composer');
-const $input      = document.getElementById('text');
-const $name       = document.getElementById('name');
-const $setName    = document.getElementById('setName');
-const $nameDisplay= document.getElementById('nameDisplay');
+const $messages    = document.getElementById('messages');
+const $form        = document.getElementById('composer');
+const $input       = document.getElementById('text');
+const $name        = document.getElementById('name');
+const $setName     = document.getElementById('setName');
+const $nameDisplay = document.getElementById('nameDisplay');
 
 let myName = 'Guest';
 
-/* ------------------------------------------------------------------
-   ⚠️ VULN #1 — DOM-based XSS via location.hash
-   The hash is read from the URL and injected into #nameDisplay with
-   innerHTML. Navigating to /#<img src=x onerror=alert(1)> fires.
------------------------------------------------------------------- */
+
+function setNameDisplay(name){
+  $nameDisplay.replaceChildren();
+  $nameDisplay.append('You are ');
+
+  const b = document.createElement('b');
+  b.textContent = name;                 // <-- escaped, not parsed as HTML
+  $nameDisplay.append(b);
+}
+
 if (location.hash.length > 1) {
-  const fromHash = decodeURIComponent(location.hash.slice(1));
+  let fromHash;
+  try {
+    fromHash = decodeURIComponent(location.hash.slice(1));
+  } catch {
+    fromHash = location.hash.slice(1);  // "#%" would throw otherwise
+  }
+  fromHash = fromHash.slice(0, 48);     // match the input's maxlength
+
   $name.value = fromHash;
   myName = fromHash;
 
-  // 👇 the bug
-  $nameDisplay.innerHTML = 'You are <b>' + fromHash + '</b>';
+  setNameDisplay(fromHash);
 
   ws.addEventListener('open', () => {
     ws.send(JSON.stringify({ type: 'setName', name: fromHash }));
   });
 }
 
-/* ------------------------------------------------------------------
-   ⚠️ VULN #2 — DOM-based XSS on "set name"
-   The value typed into #name is reflected into #nameDisplay via
-   innerHTML, and also sent to the server without sanitisation.
------------------------------------------------------------------- */
+
 $setName.addEventListener('click', () => {
-  const newName = $name.value;
+  const newName = $name.value.slice(0, 48);
   myName = newName;
   ws.send(JSON.stringify({ type: 'setName', name: newName }));
 
-  // 👇 the bug
-  $nameDisplay.innerHTML = 'You are <b>' + newName + '</b>';
+  setNameDisplay(newName);
 });
 
 ws.addEventListener('open', () => {
@@ -184,34 +211,46 @@ ws.addEventListener('open', () => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Renderer — ⚠️ VULN #3 and #4 both live here.
-   • system messages embed the raw username in `text`            (#3)
-   • user messages render both `username` and `text` raw         (#4)
-   Both go through innerHTML with no escaping.
------------------------------------------------------------------- */
+
 function renderMessage(msg) {
   const el = document.createElement('div');
-  el.className = 'msg ' + (msg.kind || 'user');
+  el.className = 'msg ' + (msg.kind === 'system' ? 'system' : 'user');
 
   const time = new Date(msg.timestamp).toLocaleTimeString();
 
-  if (msg.kind === 'system') {
-    // ⚠️ VULN #3 — stored XSS. `text` contains a username the
-    // attacker controls, injected straight into innerHTML.
-    el.innerHTML =
-      `<span class="time">${time}</span> ` +
-      `<span class="sys">${msg.text}</span>`;
-  } else {
-    const color = `hsl(${msg.color}, 45%, 55%)`;
+  const timeEl = document.createElement('span');
+  timeEl.className = 'time';
+  timeEl.textContent = time;
 
-    // ⚠️ VULN #4 — stored XSS. Both fields are attacker-controlled
-    // and neither is escaped. <img src=x onerror=...> executes.
-    el.innerHTML =
-      `<span class="time">${time}</span> ` +
-      `<span class="user" style="color:${color}">${msg.username}</span>` +
-      `<span class="sep">›</span> ` +
-      `<span class="text">${msg.text}</span>`;
+  el.append(timeEl, ' ');
+
+  if (msg.kind === 'system') {
+    
+    const sysEl = document.createElement('span');
+    sysEl.className = 'sys';
+    sysEl.textContent = msg.text;       // <-- escaped
+    el.append(sysEl);
+  } else {
+    // Coerce hue to a safe integer before building the CSS value.
+    const hue = Number.isFinite(+msg.color)
+      ? Math.abs(parseInt(msg.color, 10)) % 360
+      : 0;
+
+
+    const userEl = document.createElement('span');
+    userEl.className = 'user';
+    userEl.style.color = `hsl(${hue}, 45%, 55%)`;
+    userEl.textContent = msg.username;  // <-- escaped
+
+    const sepEl = document.createElement('span');
+    sepEl.className = 'sep';
+    sepEl.textContent = '›';
+
+    const textEl = document.createElement('span');
+    textEl.className = 'text';
+    textEl.textContent = msg.text;      // <-- escaped
+
+    el.append(userEl, sepEl, ' ', textEl);
   }
 
   $messages.appendChild(el);
@@ -223,7 +262,7 @@ ws.addEventListener('message', (ev) => {
   try { payload = JSON.parse(ev.data); } catch { return; }
 
   if (payload.type === 'history') {
-    $messages.innerHTML = '';
+    $messages.replaceChildren();
     payload.messages.forEach(renderMessage);
   } else if (payload.type === 'chat') {
     renderMessage(payload.message);
@@ -237,6 +276,9 @@ $form.addEventListener('submit', (e) => {
   ws.send(JSON.stringify({ type: 'chat', text }));
   $input.value = '';
 });
+
+
+
 </script>
 </body>
 </html>

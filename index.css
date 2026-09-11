@@ -1,0 +1,14 @@
+/* ---- additions for the lab ---- */
+#nameDisplay {
+  background-color: var(--dark-primary);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+  word-break: break-word;
+}
+#identitySection, #chatSection {
+  padding: var(--spacing);
+}
+.chatMessage .user { font-weight: 700; }
+.chatMessage .text { word-break: break-word; }
+#chatMessages .chatMessage:first-child { margin-top: 0; }

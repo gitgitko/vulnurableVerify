@@ -64,8 +64,7 @@ const elements = {
 
 const rootURL = (location.hostname === "localhost" && location.hash !== "#production")
   ? "://localhost:1999/parties/main/my-room"
-  : "s://partykit.fibonnaci314.partykit.dev/parties/main/my-room";
-
+  : "s://wakeup.gitgitko.partykit.dev/parties/main/my-room";
 const emotes = {
   "angie": "https://files.catbox.moe/7y622k.webp",
   "button": "https://gifdb.com/images/high/ralsei-deltarune-cute-hands-excited-cant-wait-l9jky4nrslpbnh1w.webp",
